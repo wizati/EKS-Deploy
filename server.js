@@ -1,17 +1,11 @@
-'use strict';
+# Use an existing image as a base
+FROM nginx:latest
 
-const express = require('express');
+# Copy the static HTML files to the container's web root directory
+COPY index.html /usr/share/nginx/html/
 
-// Constants
-const PORT = 8080;
-const HOST = '0.0.0.0';
+# Expose port 8080 to the outside world
+EXPOSE 8080
 
-// App
-const app = express();
-app.get('/', (req, res) => {
-  res.send('Testing - 2');
-});
-
-app.listen(PORT, HOST, () => {
-  console.log(`Running on http://${HOST}:${PORT}`);
-});
+# Start the nginx server
+CMD ["nginx", "-g", "daemon off;"]
