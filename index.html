@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js"></script>
+    <body>
+        <style>
+            body {
+        font-family: 'Bebas Neue', sans-serif;
+        background-image: url('https://images.unsplash.com/photo-1471991750293-5fc0e377b550?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1596&q=80');
+        background-repeat: no-repeat;
+        background-size: cover;
+        
+            }
+        /* Use Google Fonts */
+      @import url('https://fonts.googleapis.com/css?family=Bebas Neue');
+      
+
+/* Style the select element */
+select {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff6d50;
+  cursor: pointer;
+}
+
+/* Style the options */
+option {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Style the hover effect on the options */
+option:hover {
+  background-color: #ddd;
+}
+
+.Heading{
+    color: #000000;
+}
+
+#button1 {
+        margin-top: 20px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: #fff;
+        cursor: pointer;
+      }
+
+#container{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    height: 370px;
+    width: 400px;
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.2); /* semi-transparent white */
+  backdrop-filter: blur(5px);
+  text-align: center;
+   justify-content: center;
+}
+      
+        </style>
+    <div id="container">
+        <h3 class="Heading">CROWD SURVEILLANCE STREAM</h3>
+
+        <select name="Crowd" id="crowd">
+        </select>
+        
+        <br><br>
+        <h3 id="answer1" class="Heading"><strong></strong></h3>
+        <h4 id="answer" class="Heading"></h4>
+        <input type="button" id="button1" value="Get Crowd Count" onclick="return selOpt()"/>
+    </div>
+        <script type="text/JavaScript">
+            function selOpt() {
+                selEl = document.getElementById('crowd');
+                op = selEl.value;
+                console.log(op)
+                document.getElementById('answer').innerText = op;
+                document.getElementById('answer1').innerText = "Live Crowd Count";
+            }
+        </script>
+
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyADuYNNpqROi9wQjMUv-LSHA6jj9KbUaLg",
+              authDomain: "crowd-317de.firebaseapp.com",
+              databaseURL: "https://crowd-317de-default-rtdb.firebaseio.com",
+              projectId: "crowd-317de",
+              storageBucket: "crowd-317de.appspot.com",
+              messagingSenderId: "7240533552",
+              appId: "1:7240533552:web:e719996e1285903b0c8ff5"
+            };
+          
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+
+            import {getDatabase, ref, get, set, child, update, remove}
+            from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js"
+
+            const db=getDatabase()
+
+            /*var firebaseRef = firebase.database().ref().child('Crowd');
+            firebaseRef.on("value",function(snapshot){
+                snapshot.forEach(function(element){
+                    console.log(element.val());
+                })
+            });*/
+
+            
+            const dbref=ref(db)
+            let items=[]
+            let x=""
+            let values=[]
+            get(child(dbref,"Crowd/")).then((snapshot)=>{
+                if(snapshot.exists()){
+                    snapshot.forEach(function(child) {
+                        var a=child.key;
+                        console.log(typeof a);
+                        console.log(child.key);
+                        items.push(child.key);
+                        console.log(items.length);
+                    })
+                }
+                var mySelect = document.getElementById('crowd'),
+                newOption = document.createElement('option');
+                console.log(items.length);
+                for(let i=0;i<items.length;i++){
+                    get(child(dbref,"Crowd/"+items[i])).then((snapshot)=>{
+                        if(snapshot.exists()){
+                            console.log(snapshot.val().Video_Name);
+                            values.push(snapshot.val().Video_Name);
+                            newOption.value=snapshot.val().Average_Count;
+                            console.log(snapshot.val().Average_Count)
+                            newOption.innerText=snapshot.val().Video_Name;
+                            mySelect.appendChild(newOption);
+                        }
+                    });
+                }
+            })
+        </script>
+    </body>
+</html>
